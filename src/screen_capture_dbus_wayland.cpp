@@ -2,6 +2,8 @@
 
 #include "kde_capture_config.h"
 
+#include <QDebug>
+
 /// @brief Captures the screen using the grim utility.
 /// @param request The capture request details such as source geometry and output name.
 /// @return The result of the screen capture operation.
@@ -113,10 +115,8 @@ CaptureResult captureWithKWinScreenShot(const CaptureRequest &request)
     if (!request.hideOwnWindows) {
         options.insert(QStringLiteral("hide-caller-windows"), false);
     }
-    markshot::debugLog("capture",
-                       "kwin-debug hideOwnWindows=%d hide-caller-windows-set=%d",
-                       request.hideOwnWindows ? 1 : 0,
-                       !request.hideOwnWindows ? 1 : 0);
+    qDebug() << "kwin-debug hideOwnWindows=" << request.hideOwnWindows
+             << "hide-caller-windows-set=" << !request.hideOwnWindows;
 
     // KWin sends the D-Bus reply with the buffer metadata first, then writes the
     // pixels to the pipe, so this synchronous call does not deadlock even when

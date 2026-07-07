@@ -428,7 +428,8 @@ QVector<CapturedScreenFrame> captureScreensIndividually(const QList<QScreen *> &
         request.preferredOutputName = outputName;
         request.sourceGeometry = captureGeometry;
         request.allOutputs = false;
-        request.includeCursor = includeCursor;
+    request.includeCursor = includeCursor;
+    request.hideOwnWindows = hideOwnWindows;
         request.hideOwnWindows = hideOwnWindows;
 
         markshot::debugLog("capture-session",
