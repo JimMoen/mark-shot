@@ -1,6 +1,8 @@
 #include "screen_capture_internal.h"
 
 #include "kde_capture_config.h"
+#include <QDateTime>
+#include <cstdio>
 
 /// @brief Captures the screen using the grim utility.
 /// @param request The capture request details such as source geometry and output name.
@@ -114,6 +116,7 @@ CaptureResult captureWithKWinScreenShot(const CaptureRequest &request)
         options.insert(QStringLiteral("hide-caller-windows"), false);
     }
 
+    const qint64 t0 = QDateTime::currentMSecsSinceEpoch();
     // KWin sends the D-Bus reply with the buffer metadata first, then writes the
     // pixels to the pipe, so this synchronous call does not deadlock even when
     // the image is larger than the pipe buffer.
@@ -124,9 +127,15 @@ CaptureResult captureWithKWinScreenShot(const CaptureRequest &request)
                   options,
                   QVariant::fromValue(QDBusUnixFileDescriptor(fds[1])));
     ::close(fds[1]);
+    const qint64 t1 = QDateTime::currentMSecsSinceEpoch();
 
     if (!reply.isValid()) {
         ::close(fds[0]);
+        const qint64 dt = t1 - t0;
+        std::fprintf(stderr, "[mark-shot-capture] KWIN-FAIL dt=%lldms reason=dbus_error "
+                     "msg=%s\n",
+                     dt, reply.error().message().toUtf8().constData());
+        std::fflush(stderr);
         markshot::debugLog("kwin", "capture-area-error geom=%d,%d %dx%d name=%s msg=%s",
                            geometry.x(), geometry.y(), geometry.width(), geometry.height(),
                            reply.error().name().toUtf8().constData(),
@@ -170,6 +179,11 @@ CaptureResult captureWithKWinScreenShot(const CaptureRequest &request)
     ::close(fds[0]);
 
     if (received < total) {
+        const qint64 dt = QDateTime::currentMSecsSinceEpoch() - t0;
+        std::fprintf(stderr, "[mark-shot-capture] KWIN-FAIL dt=%lldms reason=short_read "
+                     "got=%llu want=%llu\n",
+                     dt, received, total);
+        std::fflush(stderr);
         markshot::debugLog("kwin", "short-read got=%llu want=%llu %dx%d stride=%d",
                            received, total, width, height, stride);
         return {{},
@@ -190,6 +204,10 @@ CaptureResult captureWithKWinScreenShot(const CaptureRequest &request)
     markshot::debugLog("kwin", "capture-area-ok geom=%d,%d %dx%d -> frame=%dx%d stride=%d format=%u",
                        geometry.x(), geometry.y(), geometry.width(), geometry.height(),
                        width, height, stride, format);
+    const qint64 dt = QDateTime::currentMSecsSinceEpoch() - t0;
+    std::fprintf(stderr, "[mark-shot-capture] KWIN-OK dt=%lldms frame=%dx%d\n",
+                 dt, width, height);
+    std::fflush(stderr);
     // Detach from the soon-to-be-freed buffer and normalize the format.
     return {view.copy().convertToFormat(QImage::Format_ARGB32_Premultiplied),
             {},
@@ -217,6 +235,16 @@ CaptureResult captureWaylandFrame(const CaptureRequest &request)
                        kdeSession ? 1 : 0, kwinAvailable ? 1 : 0, kwinConfigured ? 1 : 0,
                        QGuiApplication::desktopFileName().toUtf8().constData(),
                        desktopEnvironmentText().toUtf8().constData());
+
+    // Always-visible capture gate probe for diagnosing KWin fallback.
+    std::fprintf(stderr,
+                 "[mark-shot-capture] ENTER kde=%d kwin_cfg=%d kwin_avail=%d "
+                 "gvalid=%d gempty=%d allout=%d desktop=%s\n",
+                 kdeSession ? 1 : 0, kwinConfigured ? 1 : 0, kwinAvailable ? 1 : 0,
+                 request.sourceGeometry.isValid() ? 1 : 0,
+                 request.sourceGeometry.isEmpty() ? 1 : 0,
+                 request.allOutputs ? 1 : 0, QGuiApplication::desktopFileName().toUtf8().constData());
+    std::fflush(stderr);
 
     if (isGnomeWaylandSession() && hasGnomeScrollHelper() && request.sourceGeometry.isValid()
         && !request.sourceGeometry.isEmpty() && !request.allOutputs) {
@@ -248,6 +276,15 @@ CaptureResult captureWaylandFrame(const CaptureRequest &request)
     } else if (!kwinConfigured && (kdeSession || kwinAvailable)) {
         markshot::debugLog("capture", "kwin-screenshot-disabled-by-config");
     }
+
+    std::fprintf(stderr, "[mark-shot-capture] KWIN-DONE kde=%d kwin_cfg=%d kwin_avail=%d "
+                 "gvalid=%d gempty=%d attempted=%d\n",
+                 kdeSession ? 1 : 0, kwinConfigured ? 1 : 0, kwinAvailable ? 1 : 0,
+                 request.sourceGeometry.isValid() ? 1 : 0,
+                 request.sourceGeometry.isEmpty() ? 1 : 0,
+                 (kwinConfigured && (kdeSession || kwinAvailable)
+                  && request.sourceGeometry.isValid() && !request.sourceGeometry.isEmpty()) ? 1 : 0);
+    std::fflush(stderr);
 
     if (request.preferScreencast) {
         markshot::debugLog("capture", "route=screencast (preferScreencast)");
@@ -320,6 +357,10 @@ CaptureResult captureWaylandFrame(const CaptureRequest &request)
 
     CaptureResult portalCapture;
     if (request.allowPortalScreenshotFallback) {
+        std::fprintf(stderr,
+                     "[mark-shot-capture] PORTAL-FALLBACK entering portal screenshot "
+                     "(fallback path, KWin was not attempted or failed)\n");
+        std::fflush(stderr);
         portalCapture = captureWithPortalScreenshot(request);
         if (!portalCapture.image.isNull()) {
             return portalCapture;
