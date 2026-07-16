@@ -143,6 +143,7 @@ ShotWindow::ShotWindow(QImage frozenFrame,
 
     m_annotationPropertyPanel = new QWidget(this);
     m_annotationPropertyPanel->setObjectName(QStringLiteral("annotationPropertyPanel"));
+    m_annotationPropertyPanel->setCursor(Qt::ArrowCursor);
     m_annotationPropertyPanel->setStyleSheet(m_toolbar->styleSheet());
     const qreal propertyScale = std::max<qreal>(1.0, m_toolbarAppearance.fontSize / 11.0);
     const int propertyMarginX = std::max(8, qRound(8 * propertyScale));
@@ -360,6 +361,7 @@ ShotWindow::ShotWindow(QImage frozenFrame,
 
     m_propertyColorDialogPanel = new QWidget(this);
     m_propertyColorDialogPanel->setObjectName(QStringLiteral("propertyColorDialogPanel"));
+    m_propertyColorDialogPanel->setCursor(Qt::ArrowCursor);
     m_propertyColorDialogPanel->setStyleSheet(markshot::theme::propertyColorDialogPanelStyleSheet());
     auto *propertyColorLayout = new QVBoxLayout(m_propertyColorDialogPanel);
     propertyColorLayout->setContentsMargins(8, 8, 8, 8);
@@ -373,6 +375,7 @@ ShotWindow::ShotWindow(QImage frozenFrame,
 
     m_propertyFontPanel = new QWidget(this);
     m_propertyFontPanel->setObjectName(QStringLiteral("propertyFontPanel"));
+    m_propertyFontPanel->setCursor(Qt::ArrowCursor);
     m_propertyFontPanel->setStyleSheet(markshot::theme::openWithPanelStyleSheet());
     auto *fontPanelLayout = new QVBoxLayout(m_propertyFontPanel);
     fontPanelLayout->setContentsMargins(6, 6, 6, 6);
@@ -571,6 +574,7 @@ void ShotWindow::initializeTransientPanels()
 {
     m_openWithPanel = new QWidget(this);
     m_openWithPanel->setObjectName(QStringLiteral("openWithPanel"));
+    m_openWithPanel->setCursor(Qt::ArrowCursor);
     m_openWithPanel->setStyleSheet(markshot::theme::openWithPanelStyleSheet());
     auto *openLayout = new QVBoxLayout(m_openWithPanel);
     openLayout->setContentsMargins(8, 8, 8, 8);
@@ -579,6 +583,7 @@ void ShotWindow::initializeTransientPanels()
 
     m_extensionPanel = new QWidget(this);
     m_extensionPanel->setObjectName(QStringLiteral("extensionPanel"));
+    m_extensionPanel->setCursor(Qt::ArrowCursor);
     m_extensionPanel->setStyleSheet(markshot::theme::openWithPanelStyleSheet());
     auto *extensionLayout = new QVBoxLayout(m_extensionPanel);
     extensionLayout->setContentsMargins(8, 8, 8, 8);
@@ -587,6 +592,7 @@ void ShotWindow::initializeTransientPanels()
 
     m_colorPalette = new QWidget(this);
     m_colorPalette->setObjectName(QStringLiteral("colorPalette"));
+    m_colorPalette->setCursor(Qt::ArrowCursor);
     m_colorPalette->setStyleSheet(markshot::theme::colorPaletteStyleSheet());
     for (const QColor &color : markshot::theme::paletteColors()) {
         auto *button = new QPushButton(m_colorPalette);
