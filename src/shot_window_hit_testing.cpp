@@ -21,6 +21,14 @@ void ShotWindow::updateCursor()
         return;
     }
 
+    if ((m_propertyRectangleStyleCombo && m_propertyRectangleStyleCombo->view()->isVisible())
+        || (m_propertyArrowStyleCombo && m_propertyArrowStyleCombo->view()->isVisible())
+        || (m_propertyHighlighterStyleCombo && m_propertyHighlighterStyleCombo->view()->isVisible())
+        || (m_propertyNumberStyleCombo && m_propertyNumberStyleCombo->view()->isVisible())) {
+        setCursor(Qt::ArrowCursor);
+        return;
+    }
+
     if (m_tool == Tool::Move && !m_fullscreenAnnotation) {
         switch (m_selectionDrag) {
         case SelectionDrag::MagnifierSource:
