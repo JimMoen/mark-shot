@@ -418,6 +418,20 @@ bool ShotWindow::eventFilter(QObject *watched, QEvent *event)
         clearWheelPreview();
     }
 
+    if (watched->property("propertyComboPopup").toBool()) {
+        if (event->type() == QEvent::Show) {
+            if (auto *w = qobject_cast<QWidget *>(watched)) {
+                w->setCursor(Qt::ArrowCursor);
+            }
+            setCursor(Qt::ArrowCursor);
+            return false;
+        }
+        if (event->type() == QEvent::Hide) {
+            updateCursor();
+            return false;
+        }
+    }
+
     const bool isFullscreenMoveButton = m_fullscreenAnnotation
         && watched->property("action").toString() == markshot::ui::actionName(Action::ToolMove);
     const bool isToolbarGrip = watched->objectName() == QStringLiteral("toolbarGrip");
