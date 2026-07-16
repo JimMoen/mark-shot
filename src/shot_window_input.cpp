@@ -204,6 +204,9 @@ void ShotWindow::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (m_mode != Mode::Editing || !m_dragging || !m_draft.has_value()) {
+        if (m_mode == Mode::Editing) {
+            updateCursor();
+        }
         return;
     }
 
