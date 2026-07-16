@@ -49,6 +49,56 @@ QCursor captureCrossCursor()
     return QCursor(pixmap, 16, 16);
 }
 
+QCursor rotateCursor()
+{
+    QPixmap pixmap(33, 33);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.translate(16, 16);
+
+    const qreal r = 11.0;
+    // Arc from ~10 oclock (150) clockwise to ~2 oclock (30), gap at bottom.
+    const int startAngle = 150 * 16;
+    const int spanAngle = 240 * 16;
+    const QRectF arcRect(-r, -r, 2.0 * r, 2.0 * r);
+
+    // Arrowhead at the end of the arc (2 oclock = 30 degrees).
+    static const auto drawArrowhead = [](QPainter &p, const QColor &color, qreal width, qreal radius) {
+        p.save();
+        p.setPen(Qt::NoPen);
+        p.setBrush(color);
+        const qreal a = qDegreesToRadians(30.0);
+        const qreal ax = radius * qCos(a);
+        const qreal ay = -radius * qSin(a);
+        const QPointF tip(ax, ay);
+        const QPointF tangent(-qSin(a), -qCos(a));
+        const QPointF left = tip - 5.0 * tangent + 2.0 * QPointF(qCos(a), -qSin(a));
+        const QPointF right = tip + 5.0 * tangent + 2.0 * QPointF(qCos(a), -qSin(a));
+        QPainterPath arrow;
+        arrow.moveTo(tip);
+        arrow.lineTo(left);
+        arrow.lineTo(right);
+        arrow.closeSubpath();
+        p.drawPath(arrow);
+        p.restore();
+    };
+
+    for (int layer = 0; layer < 3; ++layer) {
+        const QColor c = layer == 0 ? QColor(15, 23, 42, 235)
+                       : layer == 1 ? QColor(255, 255, 255, 245)
+                                    : QColor(45, 212, 191, 255);
+        const qreal w = layer == 0 ? 4.0 : layer == 1 ? 2.5 : 1.0;
+        painter.setPen(QPen(c, w, Qt::SolidLine, Qt::RoundCap));
+        painter.drawArc(arcRect, startAngle, spanAngle);
+        drawArrowhead(painter, c, w, r);
+    }
+
+    painter.end();
+    return QCursor(pixmap, 16, 16);
+}
+
 qreal normalizedRotationDegrees(qreal degrees)
 {
     degrees = std::fmod(degrees, 360.0);

@@ -30,13 +30,15 @@ void ShotWindow::updateCursor()
         switch (m_selectionDrag) {
         case SelectionDrag::MagnifierSource:
         case SelectionDrag::MagnifierLens:
-        case SelectionDrag::Rotate:
         case SelectionDrag::LineControl:
         case SelectionDrag::LineStart:
         case SelectionDrag::LineEnd:
         case SelectionDrag::NumberTip:
         case SelectionDrag::NumberBubble:
             setCursor(Qt::SizeAllCursor);
+            return;
+        case SelectionDrag::Rotate:
+            setCursor(rotateCursor());
             return;
         case SelectionDrag::Left:
         case SelectionDrag::Right:
@@ -75,13 +77,15 @@ void ShotWindow::updateCursor()
         switch (m_annotationDrag) {
         case SelectionDrag::MagnifierSource:
         case SelectionDrag::MagnifierLens:
-        case SelectionDrag::Rotate:
         case SelectionDrag::LineControl:
         case SelectionDrag::LineStart:
         case SelectionDrag::LineEnd:
         case SelectionDrag::NumberTip:
         case SelectionDrag::NumberBubble:
             setCursor(Qt::SizeAllCursor);
+            return;
+        case SelectionDrag::Rotate:
+            setCursor(rotateCursor());
             return;
         case SelectionDrag::Left:
         case SelectionDrag::Right:

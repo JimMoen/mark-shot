@@ -103,6 +103,7 @@ QString magnifierScaleText(qreal scale);
 /// @brief Creates the high-contrast cross cursor used during capture.
 /// @return Cursor used for selection and annotation drawing modes.
 QCursor captureCrossCursor();
+QCursor rotateCursor();
 qreal normalizedRotationDegrees(qreal degrees);
 std::optional<bool> boolFromText(QString value);
 std::optional<bool> boolFromConfigValue(const QJsonValue &value);
