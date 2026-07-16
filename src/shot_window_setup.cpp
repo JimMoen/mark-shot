@@ -249,9 +249,6 @@ ShotWindow::ShotWindow(QImage frozenFrame,
     // 矩形风格切换:描边/高亮/反色,仅在 Tool::Rectangle 选中或激活时显示
     m_propertyRectangleStyleCombo = new QComboBox(m_annotationPropertyPanel);
     m_propertyRectangleStyleCombo->setCursor(Qt::ArrowCursor);
-    m_propertyRectangleStyleCombo->view()->setCursor(Qt::ArrowCursor);
-    m_propertyRectangleStyleCombo->view()->setProperty("propertyComboPopup", true);
-    m_propertyRectangleStyleCombo->view()->installEventFilter(this);
     m_propertyRectangleStyleCombo->setFocusPolicy(Qt::NoFocus);
     m_propertyRectangleStyleCombo->addItem(MS_TR("Stroke"), static_cast<int>(RectangleStyle::Stroke));
     m_propertyRectangleStyleCombo->addItem(MS_TR("Highlight"), static_cast<int>(RectangleStyle::Highlight));
@@ -268,9 +265,6 @@ ShotWindow::ShotWindow(QImage frozenFrame,
     propertyLayout->addWidget(m_propertyRectangleStyleCombo);
     m_propertyArrowStyleCombo = new QComboBox(m_annotationPropertyPanel);
     m_propertyArrowStyleCombo->setCursor(Qt::ArrowCursor);
-    m_propertyArrowStyleCombo->view()->setCursor(Qt::ArrowCursor);
-    m_propertyArrowStyleCombo->view()->setProperty("propertyComboPopup", true);
-    m_propertyArrowStyleCombo->view()->installEventFilter(this);
     m_propertyArrowStyleCombo->setFocusPolicy(Qt::NoFocus);
     m_propertyArrowStyleCombo->addItem(MS_TR("Fletched"), static_cast<int>(ArrowStyle::Fletched));
     m_propertyArrowStyleCombo->addItem(MS_TR("KDE"), static_cast<int>(ArrowStyle::Kde));
@@ -287,9 +281,6 @@ ShotWindow::ShotWindow(QImage frozenFrame,
     propertyLayout->addWidget(m_propertyArrowStyleCombo);
     m_propertyHighlighterStyleCombo = new QComboBox(m_annotationPropertyPanel);
     m_propertyHighlighterStyleCombo->setCursor(Qt::ArrowCursor);
-    m_propertyHighlighterStyleCombo->view()->setCursor(Qt::ArrowCursor);
-    m_propertyHighlighterStyleCombo->view()->setProperty("propertyComboPopup", true);
-    m_propertyHighlighterStyleCombo->view()->installEventFilter(this);
     m_propertyHighlighterStyleCombo->setFocusPolicy(Qt::NoFocus);
     m_propertyHighlighterStyleCombo->addItem(MS_TR("Pen"), static_cast<int>(HighlighterStyle::Freehand));
     m_propertyHighlighterStyleCombo->addItem(MS_TR("Line"), static_cast<int>(HighlighterStyle::StraightLine));
@@ -305,9 +296,6 @@ ShotWindow::ShotWindow(QImage frozenFrame,
     propertyLayout->addWidget(m_propertyHighlighterStyleCombo);
     m_propertyNumberStyleCombo = new QComboBox(m_annotationPropertyPanel);
     m_propertyNumberStyleCombo->setCursor(Qt::ArrowCursor);
-    m_propertyNumberStyleCombo->view()->setCursor(Qt::ArrowCursor);
-    m_propertyNumberStyleCombo->view()->setProperty("propertyComboPopup", true);
-    m_propertyNumberStyleCombo->view()->installEventFilter(this);
     m_propertyNumberStyleCombo->setFocusPolicy(Qt::NoFocus);
     m_propertyNumberStyleCombo->addItem(MS_TR("1, 2, 3"), static_cast<int>(NumberStyle::Arabic));
     m_propertyNumberStyleCombo->addItem(MS_TR("A, B, C"), static_cast<int>(NumberStyle::UpperAlpha));
